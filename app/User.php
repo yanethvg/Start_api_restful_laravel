@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Str;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,6 +16,8 @@ class User extends Authenticatable
 
     const USUARIO_ADMINISTRADOR = 'true';
     const USUARIO_REGULAR ='false';
+
+    protected $table ='users';
 
     /**
      * The attributes that are mass assignable.
@@ -61,6 +64,6 @@ class User extends Authenticatable
     //se recomienda a partir de 24 caracteres por eso se coloca 40 porque es largo
     public static function generarVerificationToken()
     {
-        return str_random(40);
+        return Str::random(40);
     }
 }
