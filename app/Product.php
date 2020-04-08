@@ -17,7 +17,7 @@ class Product extends Model
     	'description',
     	'quantity',
     	'status',
-    	'image',
+    	'image',+
     	'seller_id',
     ];
 
@@ -27,7 +27,7 @@ class Product extends Model
     }
     public function categories()
     {
-        return $this->belongsToMany(Category::class)
+        return $this->belongsToMany(Category::class);
     }
     public function seller()
     {

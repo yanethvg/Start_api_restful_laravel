@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Product;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateProductsTable extends Migration
 {
@@ -15,7 +16,14 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('description',1000);
+            $table->integer('quantity')->unsigned();
+            $table->string('status')->default(Product::PRODUCT_NO_DISPONIBLE);
+            $table->string('image');
+            $table->bigInteger('seller_id')->unsigned();
             $table->timestamps();
+            $table->foreign('seller_id')->references('id')->on('users');
         });
     }
 
