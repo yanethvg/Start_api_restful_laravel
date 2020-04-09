@@ -33,6 +33,24 @@ class User extends Authenticatable
         'admin',
     ];
 
+    //mutador de Nombre
+    public function setNameAttribute($valor)
+    {
+        $this->attributes['name'] = strtolower($valor);
+    }
+     //accesor para el nombre
+    //se retorna el valor con transformacion sin necesidad de modificarlo
+    public function getNameAttribute($valor)
+    {
+       // return ucfirst($valor);
+        return ucwords($valor);
+    }
+    //mutador para el correo electronico
+    public function setEmailAttribute($valor)
+    {
+        $this->attributes['email'] = strtolower($valor);
+    }
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -66,4 +84,5 @@ class User extends Authenticatable
     {
         return Str::random(40);
     }
+
 }
