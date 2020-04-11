@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Throwable;
 use App\Traits\ApiResponser;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -61,6 +62,10 @@ class Handler extends ExceptionHandler
         if($exception instanceof ModelNotFoundException){
             $modelo = strtolower(class_basename($exception->getModel()));
             return $this->errorResponse("No existe ninguna instancia de {$modelo} con el id especificado ",404);
+        }
+        //esto se probara despúes
+        if($exception instanceof AuthorizationException) {
+            return $this->errorResponse("No autenticado",401);
         }
         return parent::render($request, $exception);
     }
