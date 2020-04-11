@@ -4,10 +4,14 @@ namespace App\Exceptions;
 
 use Throwable;
 use App\Traits\ApiResponser;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -67,7 +71,33 @@ class Handler extends ExceptionHandler
         if($exception instanceof AuthorizationException) {
             return $this->errorResponse("No autenticado",401);
         }
-        return parent::render($request, $exception);
+        if($exception instanceof AuthorizationException) {
+            return $this->errorResponse("No posee permisos para ejecutar esta acción",403);
+        }
+        if($exception instanceof NotFoundHttpException) {
+            return $this->errorResponse("No se encontro la URL especificada",404);
+        }
+        if($exception instanceof NotFoundHttpException) {
+            return $this->errorResponse("No se encontro la URL especificada",404);
+        }
+        if($exception instanceof MethodNotAllowedHttpException) {
+            return $this->errorResponse("El metodo especificado en la petición no es valido",405);
+        }
+        if($exception instanceof HttpException) {
+            return $this->errorResponse($exception->getMessages(),$exception->getStatusCode());
+        }
+        if($exception instanceof QueryException) {
+            $codigo = $exception->errorInfo[1];
+            if($codigo == 1451)
+            {
+                return $this->errorResponse('No se puede eliminar de forma permanente el recurso porque está relacionado con algún otro.',409); 
+            }
+           
+        }
+        if(config('app.debug')){
+            return parent::render($request, $exception);
+        }
+        return $this->errorResponse('Falla inesperada. Intente luego',500);
     }
 
     protected function convertValidationExceptionToResponse(ValidationException $e, $request)
