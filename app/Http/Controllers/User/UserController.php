@@ -15,9 +15,9 @@ class UserController extends ApiController
      */
     public function index()
     {
-        $usuarios = User::all();
+        $users = User::all();
 
-        return $this->showAll($usuarios);
+        return $this->showAll($users);
     }
 
     /**
@@ -42,9 +42,9 @@ class UserController extends ApiController
         $campos['verification_token'] = User::generarVerificationToken();
         $campos['admin'] = User::USUARIO_REGULAR;
 
-        $usuario = User::create($campos);
+        $user = User::create($campos);
 
-        return $this->showOne($usuario,201);
+        return $this->showOne($user,201);
     }
 
     /**
@@ -53,11 +53,11 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        $usuario = User::findOrFail($id);
+        //$usuario = User::findOrFail($id);
 
-        return $this->showOne($usuario,200);
+        return $this->showOne($user,200);
     }
     /**
      * Update the specified resource in storage.
@@ -66,12 +66,12 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $usuario = User::findOrFail($id);
-
+        //$usuario = User::findOrFail($id);
+        //dd($request);
         $reglas = [
-            'email' => 'email|unique:users,email,' . $usuario->id,
+            'email' => 'email|unique:users,email,' . $user->id,
             'password' => 'min:6|confirmed',
             'admin' => 'in:'. User::USUARIO_ADMINISTRADOR . ',' . User::USUARIO_REGULAR,
         ];
@@ -79,30 +79,30 @@ class UserController extends ApiController
         $this->validate($request,$reglas);
 
         if($request->has('name')){
-            $usuario->name = $request->name;
+            $user->name = $request->name;
         }
-        if($request->has('email') && $usuario->email != $request->email){
+        if($request->has('email') && $user->email != $request->email){
             $campos['verified'] = User::USUARIO_NO_VERIFICADO;
             $campos['verification_token'] = User::generarVerificationToken(); 
-            $usuario->email = $request->email;
+            $user->email = $request->email;
         }
         if($request->has('password')){
-            $usuario->password = bcrypt($request->password);
+            $user->password = bcrypt($request->password);
         }
         if($request->has('admin')){
-            if(!$usuario->esVerificado()){
+            if(!$user->esVerificado()){
                 return $this->errorResponse('Unicamente los usuarios verificados pueden cambiar su valor de administrador',409);
             }
-            $usuario->admin = $request->admin;
+            $user->admin = $request->admin;
         }
         
-        if(!$usuario->isDirty())
+        if(!$user->isDirty())
         {
             return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
         }
-        $usuario->save();
+        $user->save();
 
-        return $this->showOne($usuario,200);
+        return $this->showOne($user,200);
     }
 
     /**
@@ -111,13 +111,13 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        $usuario = User::findOrFail($id);
+       // $usuario = User::findOrFail($id);
 
-        $usuario->delete();
+        $user->delete();
         
-        return $this->showOne($usuario,200);
+        return $this->showOne($user,200);
 
     }
 }
