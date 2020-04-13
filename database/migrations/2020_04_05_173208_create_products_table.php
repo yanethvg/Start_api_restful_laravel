@@ -24,6 +24,7 @@ class CreateProductsTable extends Migration
             $table->bigInteger('seller_id')->unsigned();
             $table->timestamps();
             $table->foreign('seller_id')->references('id')->on('users');
+            $table->softDeletes();
         });
     }
 
