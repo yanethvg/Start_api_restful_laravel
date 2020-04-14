@@ -26,6 +26,11 @@ class Product extends Model
     	'seller_id',
     ];
 
+    //excluir la información del pivote 
+    protected $hidden = [
+        'pivot'
+    ];
+
     public function estaDisponible()
     {
     	return $this->status == Product::PRODUCT_DISPONIBLE;

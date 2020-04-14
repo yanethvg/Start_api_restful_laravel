@@ -17,6 +17,11 @@ class Category extends Model
     	'description',
     ];
 
+    //excluir la información del pivote 
+    protected $hidden = [
+        'pivot'
+    ];
+
     public function products()
     {
     	return $this->belongsToMany(Product::class);
