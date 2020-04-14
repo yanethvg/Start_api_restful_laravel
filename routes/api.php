@@ -29,6 +29,10 @@ Route::resource('products','Product\ProductController',['only'=> ['index','show'
 *Categories
 */
 Route::resource('categories','Category\CategoryController',['except'=> ['create','edit']]);
+//rutas complejas
+Route::resource('categories.products','Category\CategoryProductController',['only'=> ['index']]);
+Route::resource('categories.sellers','Category\CategorySellerController',['only'=> ['index']]);
+Route::resource('categories.transactions','Category\CategoryTransactionController',['only'=> ['index']]);
 /**
 *Transactions
 */
