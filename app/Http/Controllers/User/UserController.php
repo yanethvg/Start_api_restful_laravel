@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\User;
+use App\Mail\UserCreated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiController;
 
 class UserController extends ApiController
@@ -43,7 +45,8 @@ class UserController extends ApiController
         $campos['admin'] = User::USUARIO_REGULAR;
 
         $user = User::create($campos);
-
+        Mail::to($user)->send(new UserCreated($user));
+           
         return $this->showOne($user,201);
     }
 
