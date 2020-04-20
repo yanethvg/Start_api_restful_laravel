@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\User;
 use App\Mail\UserCreated;
 use Illuminate\Http\Request;
+use App\Mail\UserMailChanged;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiController;
 
@@ -84,10 +85,14 @@ class UserController extends ApiController
         if($request->has('name')){
             $user->name = $request->name;
         }
-        if($request->has('email') && $user->email != $request->email){
-            $campos['verified'] = User::USUARIO_NO_VERIFICADO;
-            $campos['verification_token'] = User::generarVerificationToken(); 
+       
+        if ($request->has('email') && $user->email != $request->email) {
+            $user->verified = User::USUARIO_NO_VERIFICADO;
+            $user->verification_token = User::generarVerificationToken();
             $user->email = $request->email;
+        }
+        if($user->isDirty('email')){
+            Mail::to($user)->send(new UserMailChanged($user));
         }
         if($request->has('password')){
             $user->password = bcrypt($request->password);
@@ -104,6 +109,7 @@ class UserController extends ApiController
             return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
         }
         $user->save();
+       
 
         return $this->showOne($user,200);
     }
