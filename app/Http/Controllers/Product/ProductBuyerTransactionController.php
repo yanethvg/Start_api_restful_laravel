@@ -34,6 +34,11 @@ class ProductBuyerTransactionController extends ApiController
             return $this->errorResponse('El producto para esta transacción no esta disponible',409);
         }
         if($product->quantity < $request->quantity){
+            if ($product->quantity === 0) {
+                $product->status = Product::PRODUCT_NO_DISPONIBLE;
+                $product->save();
+                
+            }
             return $this->errorResponse('El producto no tiene la cantidad disponble requerida para la transacción',409);
         }
 
