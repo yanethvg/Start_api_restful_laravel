@@ -77,14 +77,12 @@ class Handler extends ExceptionHandler
         if($exception instanceof NotFoundHttpException) {
             return $this->errorResponse("No se encontro la URL especificada",404);
         }
-        if($exception instanceof NotFoundHttpException) {
-            return $this->errorResponse("No se encontro la URL especificada",404);
-        }
         if($exception instanceof MethodNotAllowedHttpException) {
             return $this->errorResponse("El metodo especificado en la petición no es valido",405);
         }
+
         if($exception instanceof HttpException) {
-            return $this->errorResponse($exception->getMessages(),$exception->getStatusCode());
+            return $this->errorResponse($exception->getMessage(),$exception->getStatusCode());
         }
         if($exception instanceof QueryException) {
             $codigo = $exception->errorInfo[1];
