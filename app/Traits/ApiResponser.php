@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Collection;
+use Illuminate\Queue\Console\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -35,6 +36,8 @@ trait ApiResponser
 		$collection = $this->paginate($collection);
 		//aqui transformarmos la coleccion
 		$collection = $this->transformData($collection,$transformer);
+		//utilizando el metodo de cache
+		$collection = $this->cacheResponse($collection);
 		//ya incluye data en la respuesta
 		return $this->successResponse($collection,$code);
 	}
@@ -105,6 +108,22 @@ trait ApiResponser
 		$transformation = fractal($data,new $transformer);
 
 		return $transformation->toArray();
+	}
+	protected function cacheResponse($data)
+	{
+		//recibe un array no una collection
+		$url = request()->url();
+		$queryParams = request()->query();
+
+		ksort($queryParams);
+
+		$queryString = http_build_query($queryParams);
+
+		$fullUrl = "{$url}?{$queryString}";
+
+		return Cache::remember($fullUrl, 30/60, function() use($data) {
+			return $data;
+		});
 	}
 	
 }
