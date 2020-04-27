@@ -25,6 +25,8 @@ trait ApiResponser
 		}
 		//aqui rescatamos que tipo de transformador
 		$transformer = $collection->first()->transformer;
+		//filtrar antes de ordenar
+		$collection = $this->filterData($collection,$transformer);
 		//haciendo uso de ordenar debe ser antes de la transformación 
 		$collection = $this->sortData($collection,$transformer);
 		//aqui transformarmos la coleccion
@@ -60,6 +62,18 @@ trait ApiResponser
 		$transformation = fractal($data,new $transformer);
 
 		return $transformation->toArray();
+	}
+	protected function filterData(Collection $collection, $transformer)
+	{
+		foreach (request()->query() as $query => $value) {
+			$attribute = $transformer::originalAttribute($query);
+
+			if (isset($attribute, $value)) {
+				$collection = $collection->where($attribute, $value);
+			}
+		}
+
+		return $collection;
 	}
 }
 
