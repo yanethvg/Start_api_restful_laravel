@@ -25,6 +25,8 @@ trait ApiResponser
 		}
 		//aqui rescatamos que tipo de transformador
 		$transformer = $collection->first()->transformer;
+		//haciendo uso de ordenar debe ser antes de la transformación 
+		$collection = $this->sortData($collection);
 		//aqui transformarmos la coleccion
 		$collection = $this->transformData($collection,$transformer);
 		//ya incluye data en la respuesta
@@ -43,6 +45,15 @@ trait ApiResponser
 	protected function showMessage($message,$code = 200)
 	{
 		return response()->json(['data' => $message,'code' => $code], $code);
+	}
+	protected function sortData(Collection $collection)
+	{
+		if(request()->has('sort_by')){
+			$attribute = request()->sort_by;
+
+			$collection = $collection->sortBy->{$attribute};
+		}
+		return $collection;
 	}
 	protected function transformData($data, $transformer)
 	{
