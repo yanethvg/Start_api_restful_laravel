@@ -42,6 +42,7 @@ Route::resource('categories','Category\CategoryController',['except'=> ['create'
 //rutas complejas
 Route::resource('categories.products','Category\CategoryProductController',['only'=> ['index']]);
 Route::resource('categories.sellers','Category\CategorySellerController',['only'=> ['index']]);
+Route::resource('categories.buyers','Category\CategoryBuyerController',['only'=> ['index']]);
 Route::resource('categories.transactions','Category\CategoryTransactionController',['only'=> ['index']]);
 /**
 *Transactions
