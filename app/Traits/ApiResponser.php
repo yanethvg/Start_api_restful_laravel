@@ -2,9 +2,10 @@
 
 namespace App\Traits;
 
+
 use Illuminate\Support\Collection;
-use Illuminate\Queue\Console\Cache;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
 //use Illuminate\Database\Eloquent\Collection;
@@ -112,16 +113,18 @@ trait ApiResponser
 	protected function cacheResponse($data)
 	{
 		//recibe un array no una collection
+		//conocer la url actual
 		$url = request()->url();
+		//todos los parametros que hay en la URL
 		$queryParams = request()->query();
-
+		//ordena un array dependiendo de la clave
 		ksort($queryParams);
-
+		//recibe un array de los parametros ordenados
 		$queryString = http_build_query($queryParams);
-
+		//esta es la url completa
 		$fullUrl = "{$url}?{$queryString}";
-
-		return Cache::remember($fullUrl, 30/60, function() use($data) {
+		//utilizar el fasa de cache recibe la url,tiempo, 
+		return Cache::remember($fullUrl, 15/60, function() use($data) {
 			return $data;
 		});
 	}
