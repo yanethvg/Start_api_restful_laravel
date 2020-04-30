@@ -16,3 +16,21 @@ use Illuminate\Support\Facades\Route;
 /*Route::get('/', function () {
     return view('welcome');
 });*/
+//Auth::routes([ 'register' => false ]);
+// Authentication Routes...
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+        
+// Password Reset Routes...
+Route::resetPassword();
+        
+// Email Verification Routes...
+Route::emailVerification();
+        
+    
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', function(){
+	return view('welcome');
+})->middleware('guest');
+

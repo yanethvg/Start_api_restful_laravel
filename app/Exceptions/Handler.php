@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Throwable;
 use App\Traits\ApiResponser;
 use Illuminate\Database\QueryException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -69,7 +71,8 @@ class Handler extends ExceptionHandler
         }
         //esto se probara despúes
         if($exception instanceof AuthorizationException) {
-            return $this->errorResponse("No autenticado",401);
+            //return $this->errorResponse("No autenticado",401);
+            return $this->unauthenticated($request,$exception);
         }
         if($exception instanceof AuthorizationException) {
             return $this->errorResponse("No posee permisos para ejecutar esta acción",403);
@@ -92,16 +95,40 @@ class Handler extends ExceptionHandler
             }
            
         }
+        //para controlar la excepcion csrf token
+        if($exception instanceof TokenMismatchException) {
+           return redirect()->back()->withInput($request->input());
+        }
         if(config('app.debug')){
             return parent::render($request, $exception);
         }
         return $this->errorResponse('Falla inesperada. Intente luego',500);
+    }
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($this->isFrontend($request)) {
+            return redirect()->guest('login');
+        }
+        return $this->errorResponse('No autenticado.', 401);        
     }
 
     protected function convertValidationExceptionToResponse(ValidationException $e, $request)
     {
         $errors = $e->validator->errors()->getMessages();
 
+         if ($this->isFrontend($request)) {
+            //se necesita validar el uso de ajax 
+            return $request->ajax() ? response()->json($errors, 422) : redirect()
+                ->back()
+                ->withInput($request->input())
+                ->withErrors($errors);
+        }
+
         return $this->errorResponse($errors,422);
+    }
+
+    private function isFrontend($request)
+    {
+        return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
     }
 }
