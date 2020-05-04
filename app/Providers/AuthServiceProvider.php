@@ -33,5 +33,7 @@ class AuthServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(Carbon::now()->addMinutes(30));
         //un refresh token tiempo de expiracion a los refresh
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
+        //para grant type impricito // se recomiendo desahabilitarlo
+        Passport::enableImplicitGrant();
     }
 }
